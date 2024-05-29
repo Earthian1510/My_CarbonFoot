@@ -89,12 +89,12 @@
                 <div class="col-md-12 mb-4">
                     <label for="petrolConsumption" class="mb-2"><b>Petrol</b> <span class="fs-6">( If you don't have
                             petrol consumption then please enter 0)</span>: </label>
-                    <input type="number" id="petrolConsumption" class="form-control fs-5 fw-bold" required />
+                    <input type="number" id="petrolConsumption" class="form-control fs-4 fw-bold" required />
                 </div>
                 <div class="col-md-12 mb-4">
                     <label for="dieselConsumption" class="mb-2"><b>Diesel</b> <span class="fs-6">( If you don't have
                             diesel consumption then please enter 0)</span>: </label>
-                    <input type="number" id="dieselConsumption" class="form-control fs-5 fw-bold" required />
+                    <input type="number" id="dieselConsumption" class="form-control fs-4 fw-bold" required />
                 </div>
             </div>
 
@@ -104,33 +104,21 @@
         </section>
         <hr>
         <section class="container pt-3 pb-1">
-            <h2 class="fw-semibold">Question: How often do you consume meat in a month? </h2>
-            <!-- <p class="fs-6">(if you don't consume then please enter 0 in the field)</p> -->
-
-            <div class="row fs-5 pt-4">
-                <div class="col-md-10 mb-4">
-                    <label for="chickenConsumption" class="mb-2"><b>Chicken</b> <span class="fs-6">(if you don't consume
-                            then please enter 0 in the field)</span>: </label>
-                    <input type="number" id="chickenConsumption" class="form-control" required>
+            <h2 class="fw-semibold">Question: Are you willing to share responsibility for CO₂ emissions by Indian Livestock? </h2>
+            <p class="fs-5"> Every year, Indian livestock contributes around 20,000 crore kilograms of CO2 emissions. This livestock primarily includes buffalo and cattle. Consequently, the milk we drink, the curd we enjoy, the butter we consume, and even the meat we eat, all contribute to these emissions. Given that a significant portion of our population is undernourished and relies on these products for essential nutrition, it is crucial to balance our environmental responsibilities. As young citizens of this country, it is our duty to share the responsibility for these emissions on behalf of our fellow citizens.
+            </p>
+            
+            <div class="row fs-5 pt-4 container">
+                <div class="col-md-6 mb-4">
+                    <label for="yesIwillTake"><input type="radio" name="responsibility" id="yesIwillTake" value="yes" class="form-check-input">  YES, I will take shared responsibility</label>
                 </div>
-                <div class="col-md-10 mb-4">
-                    <label for="muttonConsumption" class="mb-2"><b>Mutton</b> <span class="fs-6">(if you don't consume
-                            then please enter 0 in the field)</span>: </label>
-                    <input type="number" id="muttonConsumption" class="form-control" required>
-                </div>
-                <div class="col-md-10 mb-4">
-                    <label for="beefConsumption" class="mb-2"><b>Beef</b> <span class="fs-6">(if you don't consume then
-                            please enter 0 in the field)</span>: </label>
-                    <input type="number" id="beefConsumption" class="form-control" required>
-                </div>
-                <div class="col-md-10 mb-4">
-                    <label for="otherConsumption" class="mb-2"><b>Other</b> <span class="fs-6">(if you don't consume
-                            then please enter 0 in the field)</span>: </label>
-                    <input type="number" id="otherConsumption" class="form-control" required>
+                <div class="col-md-6 mb-4">
+                    <label for="noIdont"><input type="radio" name="responsibility" id="noIdont" value="no" class="form-check-input">  NO, I don't want to take shared responsibility</label>
                 </div>
             </div>
-            <button class="btn btn-dark fs-4 fw-bold mt-3 mb-3" id="meatConsumptionEmissionBtn"> CO₂e</button>
-            <div id="meatConsumptionEmissionResult"></div>
+            
+            <!-- <button class="btn btn-dark fs-4 fw-bold mt-3 mb-3" id="liveStocksEmissionsBtn"> CO₂e</button> -->
+            <div id="responsibilityResult"></div>
         </section>
         <hr>
         <section class="container pt-3 pb-1">
@@ -214,10 +202,34 @@
 
             total_fuel_emissions = (petrolConsumption * Petrol_Emission) + (dieselConsumption * Diesel_Emission)
 
-            fuelEmissionResult.className = 'alert alert-danger mt-2'
+            fuelEmissionResult.className = 'alert alert-danger mt-2 fs-5'
             fuelEmissionResult.innerHTML = `Your CO₂ emissions due to fuel consumption is <span class="fw-bold fs-4">${total_fuel_emissions.toFixed(1)}Kg</span>`
         })
 
+        // Q4. Shared Responsibility
+        const radioBtns = document.getElementsByName('responsibility')
+        const responsibilityResult = document.querySelector('#responsibilityResult')
+        const shared_emissions = 235
+
+        let selectedPreference
+        
+        for(let i = 0; i < radioBtns.length; i++){
+            radioBtns[i].addEventListener('change', function(){
+                selectedPreference = document.querySelector('input[name="responsibility"]:checked').value
+                
+                if(selectedPreference === 'yes'){
+                    responsibilityResult.className = 'alert alert-primary fs-5'
+                    responsibilityResult.innerHTML = `You have taken shared responsibility for <span class="fs-4 fw-bold">235Kg</span> of CO₂ emissions 😊`
+                }
+                else{
+                    responsibilityResult.className = 'alert alert-dark fs-5'
+                    responsibilityResult.innerHTML = `You did not take shared responsibility for <span class="fs-4 fw-bold">235Kg</span> of CO₂ emissions 😔`
+                }
+            })
+        }
+       
+        
+        
         // Total Emissions
 
         const totalEmissionBtn = document.querySelector('#totalEmissionBtn')
@@ -231,12 +243,18 @@
             let Material_Emboided_GHG = total_emissions / 2
             Total_CO2_Emissions_for_a_Month = total_emissions + Material_Emboided_GHG
 
-            Total_CO2_Emissions_Yearly = Total_CO2_Emissions_for_a_Month * 12
+            if(selectedPreference === 'yes'){
+                Total_CO2_Emissions_Yearly = Total_CO2_Emissions_for_a_Month * 12 + shared_emissions
+            }
+            else {
+                Total_CO2_Emissions_Yearly = Total_CO2_Emissions_for_a_Month * 12 
+
+            }
 
 
-            totalEmissionResult.innerHTML = `<p class="alert alert-warning">Your total CO₂ emissions of a month is <span class="fs-5 fw-bold">${Total_CO2_Emissions_for_a_Month.toFixed(1)}Kg</span></p>
+            totalEmissionResult.innerHTML = `<p class="alert alert-warning fs-5">Your total CO₂ emissions of a month is <span class="fs-4 fw-bold">${Total_CO2_Emissions_for_a_Month.toFixed(1)}Kg</span></p>
               
-            <p class="alert alert-danger">Your total CO₂ emissions for a year are <span class="fs-5 fw-bold">${Total_CO2_Emissions_Yearly.toFixed(1)}Kg</span></p>`;
+            <p class="alert alert-danger fs-5">Your total CO₂ emissions for a year are <span class="fs-4 fw-bold">${Total_CO2_Emissions_Yearly.toFixed(1)}Kg</span></p>`;
 
         })
 
@@ -255,6 +273,9 @@
             dieselConsumption.value = ''
             fuelEmissionResult.className = '' 
             fuelEmissionResult.textContent = ''
+
+            responsibilityResult.className = ''
+            responsibilityResult.textContent = ''
 
             totalEmissionResult.textContent = ''
 
